@@ -42,6 +42,7 @@ for i = 1, 2 do
 		mesh = "aurora_tech_node_recharger.b3d",
 		tiles = {textures[i], "aurora_tech_tool_drone_remote.png"},
 		paramtype2 = "facedir",
+		groups = {not_in_creative_inventory = 1},
 
 		drop = "aurora_tech:recharger",
 		light_source = 10,
@@ -106,6 +107,7 @@ minetest.register_node("aurora_tech:recharger_no_power", {
 	mesh = "aurora_tech_node_recharger.b3d",
 	tiles = {"aurora_tech_node_recharger_no_power.png", "aurora_tech_tool_drone_remote.png"},
 	light_source = 3,
+	groups = {not_in_creative_inventory = 1},
 	paramtype2 = "facedir",
 
 	selection_box = {
@@ -148,6 +150,7 @@ minetest.register_node("aurora_tech:recharger_complete", {
 	mesh = "aurora_tech_node_recharger.b3d",
 	tiles = {"aurora_tech_node_recharger_complete.png", "aurora_tech_tool_drone_remote.png"},
 	paramtype2 = "facedir",
+	groups = {not_in_creative_inventory = 1},
 
 	drop = "aurora_tech:recharger",
 	light_source = 15,
