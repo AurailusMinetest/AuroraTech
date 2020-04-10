@@ -21,6 +21,7 @@ minetest.register_node("aurora_tech:mese_generator", {
 	on_rightclick = function(pos, node, clicker, itemstack)
 		if itemstack:get_name() == "default:mese_crystal" then
 			itemstack:take_item()
+			minetest.sound_play("aurora_tech_generator_start", {pos = pos, max_hear_distance = 16}, true)
 			minetest.set_node(pos, {name = "aurora_tech:mese_generator_active"})
 			return itemstack
 		end

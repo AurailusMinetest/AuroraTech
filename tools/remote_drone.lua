@@ -258,7 +258,7 @@ aurora_tech.register_tool_3d("aurora_tech:drone_icon_interact", {
 	range = 0,
 	groups = {not_in_creative_inventory = 1},
 }, function(_, player)
-
+	minetest.sound_play("aurora_tech_interact", {pos = pos, max_hear_distance = 32}, true)
 	
 	local dir = player:get_look_dir()
 	local pos = vector.add(player:getpos(),{x=0,y=0.3,z=0})
@@ -269,7 +269,6 @@ aurora_tech.register_tool_3d("aurora_tech:drone_icon_interact", {
 		if pointed_thing.type == "object" and pointed_thing.ref ~= player then
 
 			pointed_thing.ref:punch(player, 1000, {damage_groups = {fleshy=3}}, nil)
-			minetest.sound_play("aurora_tech_interact", {pos = pos, max_hear_distance = 32}, true)
 			return
 		end
 	end

@@ -20,6 +20,7 @@ minetest.register_node("aurora_tech:lava_crucible", {
 
 	on_rightclick = function(pos, node, clicker, itemstack)
 		if itemstack:get_name() == "bucket:bucket_lava" then
+			minetest.sound_play("aurora_tech_interact", {pos = pos, max_hear_distance = 8}, true)
 			itemstack:replace("bucket:bucket_empty")
 			minetest.set_node(pos, {name = "aurora_tech:lava_crucible_active"})
 			return itemstack
@@ -59,6 +60,7 @@ minetest.register_node("aurora_tech:lava_crucible_active", {
 
 			if (inv:room_for_item("main", lava)) then
 				itemstack:take_item()
+				minetest.sound_play("aurora_tech_interact", {pos = pos, max_hear_distance = 8}, true)
 				minetest.after(0, function() inv:add_item("main", lava) end)
 				minetest.set_node(pos, {name = "aurora_tech:lava_crucible"})
 				return itemstack
