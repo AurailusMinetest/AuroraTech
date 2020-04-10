@@ -65,8 +65,12 @@ local function enter_drone(name)
 	minetest.after(0, function()
 		for list in pairs(player:get_inventory():get_lists()) do
 			player:get_inventory():set_list(list, {})
-			player:get_inventory():set_stack("main", 1, "aurora_tech:drone_icon_interact")
+
 			player:get_inventory():set_stack("main", 2, "aurora_tech:drone_icon_detonate")
+
+			while player:get_inventory():room_for_item('main', 'aurora_tech:drone_icon_interact') do
+				player:get_inventory():add_item("main", "aurora_tech:drone_icon_interact")
+			end
 		end
 	end)
 end
@@ -135,6 +139,13 @@ end)
 minetest.register_on_leaveplayer(function(player)
 	exit_drone(player:get_player_name())
 end)
+
+minetest.register_on_player_hpchange(function(player, hp_change, reason)
+	if drone_refs[player:get_player_name()] ~= nil then
+		exit_drone(player:get_player_name())
+		return 0
+	else return hp_change end
+end, true)
 
 aurora_tech.register_tool_3d("aurora_tech:drone_remote", {
 	description = "Drone Remote",
@@ -209,6 +220,9 @@ minetest.register_entity("aurora_tech:drone_exploding", {
 
 		self.object:set_yaw(player:get_look_horizontal())
 		self.life = 0
+
+		self.object:set_velocity(vector.new(0, -10, 0))
+		self.object:set_hp(10)
 	end,
 
 	on_step = function (self, delta)
@@ -228,38 +242,25 @@ minetest.register_entity("aurora_tech:drone_exploding", {
 	end
 })
 
-minetest.register_node("aurora_tech:drone_icon_interact", {
+aurora_tech.register_tool_3d("aurora_tech:drone_icon_interact", {
 	description = "",
-
-	drawtype = "mesh",
+	
 	tiles = { "aurora_tech_entity_remote_drone.png" },
 	mesh = "aurora_tech_tool_drone_turret.b3d",
 
 	range = 0,
 	groups = {not_in_creative_inventory = 1},
+}, function(_, placer) minetest.after(0, function() end) end)
 
-	node_placement_prediction = "air",
-
-	on_place = function(_, placer) minetest.after(0, function() exit_drone(placer:get_player_name()) end) end,
-	on_secondary_use = function(_, placer) minetest.after(0, function() exit_drone(placer:get_player_name()) end) end
-})
-
-minetest.register_node("aurora_tech:drone_icon_detonate", {
-	-- inventory_image = "combat_drone_icon_detonate.png",
+aurora_tech.register_tool_3d("aurora_tech:drone_icon_detonate", {
 	description = "Detonate",
 
-	drawtype = "mesh",
 	tiles = { "aurora_tech_entity_remote_drone.png" },
 	mesh = "aurora_tech_tool_remote_drone_detonate.b3d",
 
-	groups = {not_in_creative_inventory = 1},
 	range = 0,
-
-	node_placement_prediction = "air",
-
-	on_place = function(_, placer) minetest.after(0, function() exit_drone(placer:get_player_name()) end) end,
-	on_secondary_use = function(_, placer) minetest.after(0, function() exit_drone(placer:get_player_name()) end) end
-})
+	groups = {not_in_creative_inventory = 1},
+}, function(_, placer) minetest.after(0, function() exit_drone(placer:get_player_name()) end) end)
 
 local t = 0
 minetest.register_globalstep(function(delta)

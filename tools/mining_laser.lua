@@ -1,5 +1,5 @@
 local laser_users = {}
-local dura = 2000
+local dura = 1400
 
 local function enable_laser(itemstack, player)
 	minetest.sound_play("aurora_tech_mining_laser_start", {to_player = player:get_player_name()}, true)
@@ -28,16 +28,19 @@ local function disable_laser(player)
 			break
 		end
 	end
+
+	if laser_users[player:get_player_name()] == nil then return end
+
 	minetest.sound_stop(laser_users[player:get_player_name()].sound)
 	minetest.sound_play("aurora_tech_mining_laser_stop", {to_player = player:get_player_name(), gain = 0.8}, true)
 	laser_users[player:get_player_name()] = nil
 end
 
-local function gun_trigger(player)
+local function gun_break_blocks(player)
  local dir = player:get_look_dir()
  local pos = vector.add(player:getpos(),{x=0,y=1.625,z=0})
 
-	local ray = minetest.raycast(pos, vector.add(pos,vector.multiply(dir, 16)), false, true)
+	local ray = minetest.raycast(pos, vector.add(pos,vector.multiply(dir, 16)), false, false)
 	local pos = nil
 	for pointed_thing in ray do
 	  local cname = minetest.get_node(pointed_thing.under).name
@@ -77,9 +80,57 @@ local function gun_trigger(player)
 	end
 end
 
-local time = 0
+local function gun_damage_entities(player)
+	local dir = player:get_look_dir()
+	local pos = vector.add(player:getpos(),{x=0,y=1.625,z=0})
+
+	local ray = minetest.raycast(pos, vector.add(pos,vector.multiply(dir, 16)), true, false)
+	local pos = nil
+	for pointed_thing in ray do
+		if pointed_thing.type == "object" and pointed_thing.ref ~= player then
+
+			pointed_thing.ref:punch(player, 1000, {damage_groups = {fleshy=1}}, bil)
+			
+			for i = 0, 15 do
+				local frame = math.floor(math.random() * 4)
+				minetest.sound_play("aurora_tech_mining_laser_destroy", {pos = pointed_thing.ref:get_pos(), gain = 0.3, max_hear_distance = 16}, true)
+				minetest.add_particle({
+					pos = vector.add(vector.add(pointed_thing.ref:get_pos(), vector.new(0, 0.8, 0)), vector.new((math.random() - 0.5) * 0.7, (math.random() - 0.5) * 1.4, (math.random() - 0.5) * 0.7)),
+					velocity = vector.new((math.random() - 0.5) * 0.7, (math.random() - 0.5) * 0.7, (math.random() - 0.5) * 0.7),
+
+					expirationtime = math.random() * 0.2 + 0.05,
+					collisiondetection = false,
+					size = 3,
+
+					texture = "aurora_tech_particle_blink_launcher_trail_dead.png^[verticalframe:4:" .. frame,
+					glow = 14
+				})
+			end
+
+			return
+		end
+	end
+end
+
+local break_time = 0
+local damage_time = 0
 minetest.register_globalstep(function(delta)
-	time = time + delta
+	break_time = break_time + delta
+	damage_time = damage_time + delta
+
+	local trigger_break = false
+	local trigger_damage = false
+
+	if break_time > 0.05 then
+		trigger_break = true
+		break_time = break_time - 0.05
+	end
+	if damage_time > 0.15 then
+		trigger_damage = true
+		damage_time = damage_time - 0.15
+	end
+
+	if not trigger_break and not trigger_damage then return end
 
 	for p,_ in pairs(laser_users) do
 		local player = minetest.get_player_by_name(p)
@@ -89,9 +140,11 @@ minetest.register_globalstep(function(delta)
 			or player:get_wielded_item():get_name() == "aurora_tech:mining_laser_active_1" then
 			disable_laser(player)
 		else
-			if time > 0.05 then
-				gun_trigger(player)
-				time = time - 0.05
+			if trigger_break then
+				gun_break_blocks(player)
+			end
+			if trigger_damage then
+				gun_damage_entities(player)
 			end
 		end
 	end
