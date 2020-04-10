@@ -176,3 +176,12 @@ minetest.register_node("aurora_tech:recharger_complete", {
 		end
 	end,
 })
+
+minetest.register_craft({
+  output = 'aurora_tech:recharger',
+  recipe = {
+      {'default:steel_ingot', 'default:glass', 'default:steel_ingot'},
+      {'default:tin_ingot', 'default:mese_crystal', 'default:tin_ingot'},
+      {'default:steelblock', 'aurora_tech:mese_generator', 'default:steelblock'},
+  },
+})

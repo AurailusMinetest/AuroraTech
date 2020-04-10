@@ -1,6 +1,6 @@
 # AuroraTech
 
-AuroraTech is a small mod made in 4 days for the UMTD Combat Modding Event. It adds three machines and four unique tools to Minetest.
+AuroraTech is a small mod made in 4 days for the UMTD Combat Modding Event. It adds four machines and four unique tools to Minetest.
 
 ## Machines
 
@@ -21,6 +21,12 @@ The Diamond Empowerer creates Empowered Diamonds when given a regular diamond an
 ![Crafting Recipe](https://raw.githubusercontent.com/Aurailus-Minetest/AuroraTech/master/instructions/lava_crucible.png)
 
 The Lava Crucible creates Lava Charges when filled with lava and powered by a Mese Generator. Lava Charges can be crafted into Lava Cores by placing nine in a grid, and can be used for crafting or as light sources.
+
+### Recharger
+
+![Crafting Recipe](https://raw.githubusercontent.com/Aurailus-Minetest/AuroraTech/master/instructions/recharger.png)
+
+The Recharger is used to Recharge the Drone Remote.
 
 ### Example
 
@@ -47,6 +53,8 @@ The Mining Laser is an extremely fast, lava powered, ranged mining device. It ca
 The Warp Boots allow you to propel yourself forward by double tapping W, even allowing you to warp through two meter thick walls. They do not need to be refuelled, instead breaking when they run out of durability.
 
 ### Drone Remote
+
+![Crafting Recipe](https://raw.githubusercontent.com/Aurailus-Minetest/AuroraTech/master/instructions/drone_remote.png)
 
 The Drone Remote allows you to pilot a weaponized drone, and detonate it when finished.
 

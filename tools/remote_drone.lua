@@ -45,6 +45,8 @@ local function enter_drone(name)
 		ent = minetest.add_entity(player:get_pos(), "aurora_tech:drone_player_ref", minetest.serialize({player = name})):get_luaentity()
 	}
 
+	minetest.sound_play("aurora_tech_drone_enter", {to_player = name}, true)
+
 	player:set_properties({ 
     collisionbox = {-0.4, 0, -0.4, 0.4, 0.45, 0.4},
     visual_size = {x = 0.63, y = 0.63, z = 0.63},
@@ -83,6 +85,8 @@ local function exit_drone(name)
 	local props = drone_refs[name]
 
 	local exploder = minetest.add_entity(player:get_pos(), "aurora_tech:drone_exploding", minetest.serialize({player = name}))
+
+	minetest.sound_play("aurora_tech_drone_exit", {to_player = name}, true)
 
 	player:set_properties({visual_size = {x = 0, y = 0}})
 	
@@ -253,7 +257,24 @@ aurora_tech.register_tool_3d("aurora_tech:drone_icon_interact", {
 
 	range = 0,
 	groups = {not_in_creative_inventory = 1},
-}, function(_, placer) minetest.after(0, function() end) end)
+}, function(_, player)
+
+	
+	local dir = player:get_look_dir()
+	local pos = vector.add(player:getpos(),{x=0,y=0.3,z=0})
+
+	local ray = minetest.raycast(pos, vector.add(pos,vector.multiply(dir, 32)), true, false)
+	local pos = nil
+	for pointed_thing in ray do
+		if pointed_thing.type == "object" and pointed_thing.ref ~= player then
+
+			pointed_thing.ref:punch(player, 1000, {damage_groups = {fleshy=3}}, nil)
+			minetest.sound_play("aurora_tech_interact", {pos = pos, max_hear_distance = 32}, true)
+			return
+		end
+	end
+
+end)
 
 aurora_tech.register_tool_3d("aurora_tech:drone_icon_detonate", {
 	description = "Detonate",
@@ -283,3 +304,12 @@ minetest.register_globalstep(function(delta)
 		end
 	end
 end)
+
+minetest.register_craft({
+  output = 'aurora_tech:drone_remote_16',
+  recipe = {
+      {'', '', 'aurora_tech:lava_charge'},
+      {'default:steel_ingot', 'default:steel_ingot', 'default:steel_ingot'},
+      {'default:tin_ingot', 'aurora_tech:empowered_diamond', 'default:tin_ingot'},
+  },
+})
