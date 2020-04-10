@@ -182,11 +182,11 @@ minetest.register_node("aurora_tech:lava_crucible_complete", {
 	end
 })
 
--- minetest.register_craft({
---   output = 'combat:diamond_empowerer',
---   recipe = {
---       {'default:steel_ingot', 'default:steel_ingot', 'default:steel_ingot'},
---       {'default:glass', 'default:diamondblock', 'default:glass'},
---       {'default:ice', 'combat:mese_generator', 'default:ice'},
---   },
--- })
+minetest.register_craft({
+  output = 'aurora_tech:lava_crucible',
+  recipe = {
+      {'default:steel_ingot', 'default:obsidian_glass', 'default:steel_ingot'},
+      {'default:steel_ingot', 'default:mese', 'default:steel_ingot'},
+      {'default:tin_ingot', 'aurora_tech:mese_generator', 'default:tin_ingot'},
+  },
+})

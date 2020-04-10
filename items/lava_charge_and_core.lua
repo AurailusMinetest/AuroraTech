@@ -17,7 +17,7 @@ minetest.register_node("aurora_tech:lava_charge", {
 })
 
 minetest.register_node("aurora_tech:lava_core", {
-	description = "Lava Charge",
+	description = "Lava Core",
 	tiles = { "aurora_tech_node_lava_crucible_active.png" },
 	drawtype = "mesh",
 	mesh = "aurora_tech_node_lava_core.b3d",

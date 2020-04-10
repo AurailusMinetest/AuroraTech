@@ -115,9 +115,6 @@ local function interact_remote(itemstack, player)
 	local charge = itemstack:get_name():sub(26)
 
 	if not drone_refs[name] then minetest.after(0, function() enter_drone(name) end) end
-
-	itemstack:replace("aurora_tech:drone_remote_" .. (charge - 1))
-	return itemstack
 end
 
 minetest.register_on_joinplayer(function(player)
@@ -139,23 +136,18 @@ minetest.register_on_leaveplayer(function(player)
 	exit_drone(player:get_player_name())
 end)
 
-aurora_tech.register_tool_3d("aurora_tech:drone_remote_0", {
-	description = "Drone Remote (Dead)",
+aurora_tech.register_tool_3d("aurora_tech:drone_remote", {
+	description = "Drone Remote",
+	description = "Drone Remote",
 	tiles = { "aurora_tech_tool_drone_remote.png" },
-	groups = {not_in_creative_inventory = 1},
-	inventory_image = "aurora_tech_icon_drone_remote_0.png",
+	-- groups = {not_in_creative_inventory = 1},
+	inventory_image = "aurora_tech_icon_drone_remote.png",
 	mesh = "aurora_tech_tool_drone_remote.b3d",
-})
-
-for i = 1, 7 do
-	aurora_tech.register_tool_3d("aurora_tech:drone_remote_" .. i, {
-		description = "Drone Remote",
-		tiles = { "aurora_tech_tool_drone_remote.png"  },
-		mesh = "aurora_tech_tool_drone_remote.b3d",
-		inventory_image = "aurora_tech_icon_drone_remote_" .. i .. ".png",
-		groups = {not_in_creative_inventory = 1 - math.floor(i / 7)},
-	}, function(itemstack, placer) return interact_remote(itemstack, placer) end)
-end
+}, 
+function(itemstack, placer) interact_remote(itemstack, placer) end, 
+16, true, function(itemstack, placer)
+	print('dead func')
+end)
 
 minetest.register_entity("aurora_tech:drone_player_ref", {
 	initial_properties = {

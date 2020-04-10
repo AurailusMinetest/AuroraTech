@@ -5,25 +5,32 @@ local function shoot_gun(player)
 
 	if gun_projectiles[name] then 
 		gun_projectiles[name]:trigger_teleport()
-		return
+		return false
 	end
 
 	local pos = vector.add(player:get_pos(), {x = 0, y = 1.35, z = 0})
  	local dir = player:get_look_dir()
 
  	minetest.sound_play("aurora_tech_blink_launcher_send", {pos = pos, max_hear_distance = 8, gain = 0.8}, true)
- 	-- minetest.sound_play("combat_blink_launcher_dead", {pos = pos, max_hear_distance = 8}, true)
 
 	local ent = minetest.add_entity(pos, "aurora_tech:blink_launcher_bullet", minetest.serialize({shooter = name}))
 	ent:set_velocity(vector.add(vector.multiply(dir, 16), vector.multiply(player:get_player_velocity(), 0.25)))
+
+	return true
+end
+
+local function gun_dead(player)
+	local pos = player:get_pos()
+ 	minetest.sound_play("aurora_tech_blink_launcher_no_power", {pos = pos, max_hear_distance = 8}, true)
 end
 
 aurora_tech.register_tool_3d("aurora_tech:blink_launcher", {
 	description = "Blink Launcher",
 	tiles = { "aurora_tech_tool_blink_launcher.png" },
 	mesh = "aurora_tech_tool_blink_launcher.b3d",
-	inventory_image = "aurora_tech_icon_blink_launcher.png"
-}, function(_, placer) shoot_gun(placer) end)
+	inventory_image = "aurora_tech_icon_blink_launcher.png",
+	range = 0,
+}, function(_, placer) return shoot_gun(placer) end, 80, true, function(_, placer) gun_dead(placer) end)
 
 minetest.register_entity("aurora_tech:blink_launcher_bullet", {
 	initial_properties = {
@@ -127,7 +134,7 @@ minetest.register_entity("aurora_tech:blink_launcher_bullet", {
 		local add_vel = vector.multiply(self.object:get_velocity(), on_ground and 1 or 0.5)
 		player:add_player_velocity(add_vel)
 		
-	 	minetest.sound_play({name = "aurora_tech_blink_launcher_recv"}, {pos = pos, max_hear_distance = 8}, true)
+	 	minetest.sound_play({name = "aurora_tech_blink_launcher_recv"}, {pos = valid, max_hear_distance = 8}, true)
 
 		for i = 0, 60 do
 			local frame = math.floor(math.random() * 4)
@@ -156,10 +163,12 @@ minetest.register_entity("aurora_tech:blink_launcher_bullet", {
 })
 
 minetest.register_craft({
-  output = 'aurora_tech:blink_launcher',
+  output = 'aurora_tech:blink_launcher_16',
   recipe = {
       {'', 'default:obsidian_glass', ''},
       {'default:tin_ingot', 'aurora_tech:empowered_diamond', 'default:steel_ingot'},
       {'', 'default:copper_ingot', 'default:steel_ingot'},
   },
 })
+
+aurora_tech.register_repair("aurora_tech:blink_launcher", "aurora_tech:empowered_diamond", 6)

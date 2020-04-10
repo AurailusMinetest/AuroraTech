@@ -1,24 +1,34 @@
 local laser_users = {}
+local dura = 2000
 
 local function enable_laser(itemstack, player)
 	minetest.sound_play("aurora_tech_mining_laser_start", {to_player = player:get_player_name()}, true)
-	laser_users[player:get_player_name()] = minetest.sound_play("aurora_tech_mining_laser_run", {to_player = player:get_player_name(), gain = 0.3, loop = true})
+	laser_users[player:get_player_name()] = {
+		uses = 0,
+		sound = minetest.sound_play("aurora_tech_mining_laser_run", {to_player = player:get_player_name(), gain = 0.3, loop = true})
+	}
 
-	itemstack:replace("aurora_tech:mining_laser_active")
+	local dura = itemstack:get_name():sub(("aurora_tech:mining_laser_0"):len())
+
+	itemstack:replace("aurora_tech:mining_laser_active_" .. dura)
 	return itemstack
+end
+
+local function laser_dead(player)
+	minetest.sound_play("aurora_tech_mining_laser_stop", {to_player = player:get_player_name(), gain = 0.8}, true)
 end
 
 local function disable_laser(player)
 	local inventory = player:get_inventory()
-	if inventory:contains_item("main", "aurora_tech:mining_laser_active") then
-		for i = 1, inventory:get_size("main") do
-			if inventory:get_stack("main", i):get_name() == "aurora_tech:mining_laser_active" then
-				inventory:set_stack("main", i, "aurora_tech:mining_laser")
-				break
-			end
+	for i = 1, inventory:get_size("main") do
+		if inventory:get_stack("main", i):get_name():sub(0, ("aurora_tech:mining_laser_active"):len()) == "aurora_tech:mining_laser_active" then
+			local dura = inventory:get_stack("main", i):get_name():sub(("aurora_tech:mining_laser_active_0"):len())
+			inventory:set_stack("main", i, "aurora_tech:mining_laser_" .. dura)
+			
+			break
 		end
 	end
-	minetest.sound_stop(laser_users[player:get_player_name()])
+	minetest.sound_stop(laser_users[player:get_player_name()].sound)
 	minetest.sound_play("aurora_tech_mining_laser_stop", {to_player = player:get_player_name(), gain = 0.8}, true)
 	laser_users[player:get_player_name()] = nil
 end
@@ -53,6 +63,18 @@ local function gun_trigger(player)
 		minetest.sound_play("aurora_tech_mining_laser_destroy", {pos = pos, gain = 0.7, max_hear_distance = 16}, true)
 		minetest.node_dig(pos, minetest.registered_nodes[minetest.get_node(pos).name], player)
 	end
+
+	local stack = player:get_wielded_item()
+	stack:get_meta():set_int("uses", laser_users[player:get_player_name()].uses)
+	local newstack = aurora_tech.damage_tool(stack)
+	local name = newstack:get_name()
+
+	if name ~= player:get_wielded_item():get_name() then 
+		player:set_wielded_item(newstack)
+		laser_users[player:get_player_name()].uses = 0
+	else
+		laser_users[player:get_player_name()].uses = laser_users[player:get_player_name()].uses + 1
+	end
 end
 
 local time = 0
@@ -62,7 +84,9 @@ minetest.register_globalstep(function(delta)
 	for p,_ in pairs(laser_users) do
 		local player = minetest.get_player_by_name(p)
 
-		if not player:get_player_control().RMB or player:get_wielded_item():get_name() ~= "aurora_tech:mining_laser_active" then
+		if not player:get_player_control().RMB 
+			or player:get_wielded_item():get_name():sub(0, ("aurora_tech:mining_laser_active"):len()) ~= "aurora_tech:mining_laser_active" 
+			or player:get_wielded_item():get_name() == "aurora_tech:mining_laser_active_1" then
 			disable_laser(player)
 		else
 			if time > 0.05 then
@@ -91,7 +115,7 @@ aurora_tech.register_tool_3d("aurora_tech:mining_laser_active", {
 	inventory_image = "aurora_tech_icon_mining_laser_active.png",
 	groups = { not_in_creative_inventory = 1 },
 	range = 0
-}, function(_, placer) minetest.after(0, function() disable_laser(placer) end) end)
+}, function(_, placer) minetest.after(0, function() disable_laser(placer) end) end, dura, false, function(_, placer) minetest.after(0, function() disable_laser(placer) end) end)
 
 
 aurora_tech.register_tool_3d("aurora_tech:mining_laser", {
@@ -100,7 +124,7 @@ aurora_tech.register_tool_3d("aurora_tech:mining_laser", {
 	mesh = "aurora_tech_tool_mining_laser.b3d",
 	inventory_image = "aurora_tech_icon_mining_laser.png",
 	range = 0
-}, function(stack, placer) return enable_laser(stack, placer) end)
+}, function(stack, placer) return enable_laser(stack, placer) end, dura, false, function(_, placer) laser_dead(placer) end)
 
 
 aurora_tech.register_tool_3d("aurora_tech:mining_laser_dropped", {
@@ -110,13 +134,18 @@ aurora_tech.register_tool_3d("aurora_tech:mining_laser_dropped", {
 	groups = { not_in_creative_inventory = 1 },
 	inventory_image = "aurora_tech_icon_mining_laser.png",
 	range = 0
-}, function(stack, placer) return enable_laser(stack, placer) end)
+}, function(stack, placer) return enable_laser(stack, placer) end, dura, false, function(_, placer) laser_dead(placer) end)
 
 minetest.register_craft({
-  output = 'aurora_tech:mining_laser',
+  output = 'aurora_tech:mining_laser_16',
   recipe = {
       {'default:bronze_ingot', 'default:meselamp', ''},
       {'', 'aurora_tech:lava_core', 'default:meselamp'},
       {'', 'default:steel_ingot', 'default:bronze_ingot'},
   },
 })
+
+aurora_tech.register_repair("aurora_tech:mining_laser", "aurora_tech:lava_charge", 2)
+aurora_tech.register_repair("aurora_tech:mining_laser_dropped", "aurora_tech:lava_charge", 2, "aurora_tech:mining_laser")
+aurora_tech.register_repair("aurora_tech:mining_laser", "aurora_tech:lava_core", 16)
+aurora_tech.register_repair("aurora_tech:mining_laser_dropped", "aurora_tech:lava_core", 16, "aurora_tech:mining_laser")
