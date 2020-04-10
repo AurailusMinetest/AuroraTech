@@ -8,6 +8,7 @@ dofile(path .. "/items/lava_charge_and_core.lua")
 dofile(path .. "/machines/diamond_empowerer.lua")
 dofile(path .. "/machines/lava_crucible.lua")
 dofile(path .. "/machines/mese_generator.lua")
+dofile(path .. "/machines/recharger.lua")
 
 dofile(path .. "/tools/blink_launcher.lua")
 dofile(path .. "/tools/mining_laser.lua")

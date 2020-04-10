@@ -17,13 +17,16 @@ local function register_tool_durability(name, defs, cb, dura, auto, cb_dead)
 
 	if auto then
 		local old_cb = cb
-		cb = function(itemstack, placer)
-			old_cb(itemstack, placer)
+		cb = function(itemstack, placer, pt)
+			old_cb(itemstack, placer, pt)
 			return aurora_tech.damage_tool(itemstack)
 		end
 	end
 
 	for i = 1, count do
+		local cb = cb
+		if i == 1 then cb = cb_dead end
+
 		local factor = (i - 1) / (count - 1)
 		local pixels = math.floor(factor * 16)
 		local opac = 255 - math.floor(factor * 255)
@@ -36,7 +39,7 @@ local function register_tool_durability(name, defs, cb, dura, auto, cb_dead)
 		defs.groups = groups
 		defs.inventory_image =
 			defs.inventory_image .. "^((aurora_tech_ui_durability_full.png^[resize:" .. pixels .. "x16)^(aurora_tech_ui_durability_empty.png^[resize:" .. pixels .. "x16^[opacity:" .. opac .. ")^[mask:aurora_tech_ui_durability_mask.png)"
-		register_tool(name .. "_" .. i, defs, i == 1 and cb_dead or cb)
+		register_tool(name .. "_" .. i, defs, cb)
 	end
 end
 
@@ -73,6 +76,8 @@ aurora_tech.register_repair = function(tool, material, amount, return_tool)
 end
 
 aurora_tech.damage_tool = function(itemstack)
+	if not itemstack or not minetest.registered_nodes[itemstack:get_name()] then return itemstack end
+
 	local dura = minetest.registered_nodes[itemstack:get_name()]._aurora_tech_dura
 	local name = minetest.registered_nodes[itemstack:get_name()]._aurora_tech_name
 

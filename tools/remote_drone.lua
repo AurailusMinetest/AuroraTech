@@ -114,9 +114,16 @@ local function exit_drone(name)
 
 end
 
-local function interact_remote(itemstack, player)
+local function interact_remote(itemstack, player, pointed_thing)
 	local name = player:get_player_name()
 	local charge = itemstack:get_name():sub(26)
+
+	print(dump(pointed_thing))
+
+	if pointed_thing and pointed_thing.type == "node" and minetest.get_node(pointed_thing.under).name == "aurora_tech:recharger" then
+		if charge == 16 then return itemstack end
+		return minetest.registered_nodes["aurora_tech:recharger"].on_rightclick(pointed_thing.under, nil, player, itemstack)
+	end
 
 	if not drone_refs[name] then minetest.after(0, function() enter_drone(name) end) end
 end
@@ -154,11 +161,7 @@ aurora_tech.register_tool_3d("aurora_tech:drone_remote", {
 	-- groups = {not_in_creative_inventory = 1},
 	inventory_image = "aurora_tech_icon_drone_remote.png",
 	mesh = "aurora_tech_tool_drone_remote.b3d",
-}, 
-function(itemstack, placer) interact_remote(itemstack, placer) end, 
-16, true, function(itemstack, placer)
-	print('dead func')
-end)
+}, function(itemstack, placer, pointed_thing) return interact_remote(itemstack, placer, pointed_thing) end, 16, true, nil)
 
 minetest.register_entity("aurora_tech:drone_player_ref", {
 	initial_properties = {
