@@ -1,7 +1,7 @@
-combat = {}
-minetest.register_on_mods_loaded(function() combat = nil end)
+aurora_tech = {}
+minetest.register_on_mods_loaded(function() aurora_tech = nil end)
 
-combat.register_tool_3d = function(name, defs, cb)
+aurora_tech.register_tool_3d = function(name, defs, cb)
 	defs.drawtype = "mesh"
 	defs.node_placement_prediction = "air"
 

@@ -41,15 +41,15 @@ local function enter_drone(name)
 		formspec = player:get_inventory_formspec(),
 		hotbar = player:hud_get_hotbar_itemcount(),
 		nametag = player:get_nametag_attributes().text,
-		hud = player:hud_add({hud_elem_type = "image", text = "combat_drone_screen.png", position = {x = 0.5, y = 0.5}, scale = {x = -100, y = -100}}),
-		ent = minetest.add_entity(player:get_pos(), "combat:drone_player_ref", minetest.serialize({player = name})):get_luaentity()
+		hud = player:hud_add({hud_elem_type = "image", text = "aurora_tech_ui_drone_overlay.png", position = {x = 0.5, y = 0.5}, scale = {x = -100, y = -100}}),
+		ent = minetest.add_entity(player:get_pos(), "aurora_tech:drone_player_ref", minetest.serialize({player = name})):get_luaentity()
 	}
 
 	player:set_properties({ 
     collisionbox = {-0.4, 0, -0.4, 0.4, 0.45, 0.4},
     visual_size = {x = 0.63, y = 0.63, z = 0.63},
-    mesh = "combat_drone.b3d",
-    textures = {"combat_drone.png"},
+    mesh = "aurora_tech_entity_remote_drone.b3d",
+    textures = {"aurora_tech_entity_remote_drone.png"},
 	})
 	player:set_nametag_attributes({text = " "})
 	player:set_eye_offset({ x = 0, y = -12, z = 0 }, player:get_eye_offset().offset_third)
@@ -59,14 +59,14 @@ local function enter_drone(name)
 	player:set_inventory_formspec([[
 		size[4, 2]
 		real_coordinates[true]
-		button[1,0.6;2,0.75;combat_detonate_drone;Detonate]
+		button[1,0.6;2,0.75;aurora_tech_detonate_drone;Detonate]
 	]])
 
 	minetest.after(0, function()
 		for list in pairs(player:get_inventory():get_lists()) do
 			player:get_inventory():set_list(list, {})
-			player:get_inventory():set_stack("main", 1, "combat:drone_icon_interact")
-			player:get_inventory():set_stack("main", 2, "combat:drone_icon_detonate")
+			player:get_inventory():set_stack("main", 1, "aurora_tech:drone_icon_interact")
+			player:get_inventory():set_stack("main", 2, "aurora_tech:drone_icon_detonate")
 		end
 	end)
 end
@@ -78,7 +78,7 @@ local function exit_drone(name)
 	if not drone_refs[name] then return end
 	local props = drone_refs[name]
 
-	local exploder = minetest.add_entity(player:get_pos(), "combat:drone_exploding", minetest.serialize({player = name}))
+	local exploder = minetest.add_entity(player:get_pos(), "aurora_tech:drone_exploding", minetest.serialize({player = name}))
 
 	player:set_properties({visual_size = {x = 0, y = 0}})
 	
@@ -112,19 +112,17 @@ end
 
 local function interact_remote(itemstack, player)
 	local name = player:get_player_name()
-	local charge = itemstack:get_name():sub(21)
+	local charge = itemstack:get_name():sub(26)
 
 	if not drone_refs[name] then minetest.after(0, function() enter_drone(name) end) end
 
-	print((charge - 1))
-
-	itemstack:replace("combat:drone_remote_" .. (charge - 1))
+	itemstack:replace("aurora_tech:drone_remote_" .. (charge - 1))
 	return itemstack
 end
 
 minetest.register_on_joinplayer(function(player)
 	minetest.register_on_player_receive_fields(function(player, _, fields)
-    if fields.combat_detonate_drone then
+    if fields.aurora_tech_detonate_drone then
     	exit_drone(player:get_player_name())
     	minetest.close_formspec(player:get_player_name(), "")
     end
@@ -141,25 +139,25 @@ minetest.register_on_leaveplayer(function(player)
 	exit_drone(player:get_player_name())
 end)
 
-combat.register_tool_3d("combat:drone_remote_0", {
+aurora_tech.register_tool_3d("aurora_tech:drone_remote_0", {
 	description = "Drone Remote (Dead)",
-	tiles = { "combat_drone_remote.png" },
+	tiles = { "aurora_tech_tool_drone_remote.png" },
 	groups = {not_in_creative_inventory = 1},
-	inventory_image = "combat_drone_remote_icon_0.png",
-	mesh = "combat_drone_remote.b3d",
+	inventory_image = "aurora_tech_icon_drone_remote_0.png",
+	mesh = "aurora_tech_tool_drone_remote.b3d",
 })
 
 for i = 1, 7 do
-	combat.register_tool_3d("combat:drone_remote_" .. i, {
+	aurora_tech.register_tool_3d("aurora_tech:drone_remote_" .. i, {
 		description = "Drone Remote",
-		tiles = { "combat_drone_remote.png"  },
-		mesh = "combat_drone_remote.b3d",
-		inventory_image = "combat_drone_remote_icon_" .. i .. ".png",
+		tiles = { "aurora_tech_tool_drone_remote.png"  },
+		mesh = "aurora_tech_tool_drone_remote.b3d",
+		inventory_image = "aurora_tech_icon_drone_remote_" .. i .. ".png",
 		groups = {not_in_creative_inventory = 1 - math.floor(i / 7)},
 	}, function(itemstack, placer) return interact_remote(itemstack, placer) end)
 end
 
-minetest.register_entity("combat:drone_player_ref", {
+minetest.register_entity("aurora_tech:drone_player_ref", {
 	initial_properties = {
     mesh = "character.b3d",
     visual = "mesh",
@@ -197,10 +195,10 @@ minetest.register_entity("combat:drone_player_ref", {
 	end,
 })
 
-minetest.register_entity("combat:drone_exploding", {
+minetest.register_entity("aurora_tech:drone_exploding", {
 	initial_properties = {
-    mesh = "combat_drone.b3d",
-    textures = {"combat_drone.png"},
+    mesh = "aurora_tech_entity_remote_drone.b3d",
+    textures = {"aurora_tech_entity_remote_drone.png"},
     collisionbox = {-0.4, 0, -0.4, 0.4, 0.45, 0.4},
     visual_size = {x = 0.63, y = 0.63, z = 0.63},
     visual = "mesh",
@@ -209,6 +207,7 @@ minetest.register_entity("combat:drone_exploding", {
     collide_with_objects = false,
     backface_culling = false,
 	},
+
 	on_activate = function(self, static)
 		local static = minetest.deserialize(static) or {}
 		if not static.player then self.object:remove() return end
@@ -219,11 +218,12 @@ minetest.register_entity("combat:drone_exploding", {
 		self.object:set_yaw(player:get_look_horizontal())
 		self.life = 0
 	end,
+
 	on_step = function (self, delta)
 		self.life = self.life + delta;
 
-		local texture = "combat_drone.png"
-		if self.life * 40 % 20 > 10 and self.life * 40 % 20 < 20 then texture = "combat_drone.png^[colorize:#ffcccc:120" end
+		local texture = "aurora_tech_entity_remote_drone.png"
+		if self.life * 40 % 20 > 10 and self.life * 40 % 20 < 20 then texture = "aurora_tech_entity_remote_drone.png^[colorize:#ffcccc:120" end
 
 		self.object:set_properties({ textures = { texture } })
 
@@ -236,13 +236,12 @@ minetest.register_entity("combat:drone_exploding", {
 	end
 })
 
-minetest.register_node("combat:drone_icon_interact", {
-	-- inventory_image = "combat_drone_icon_interact.png",
+minetest.register_node("aurora_tech:drone_icon_interact", {
 	description = "",
 
 	drawtype = "mesh",
-	tiles = { "combat_drone.png" },
-	mesh = "combat_drone_shoot.b3d",
+	tiles = { "aurora_tech_entity_remote_drone.png" },
+	mesh = "aurora_tech_tool_drone_turret.b3d",
 
 	range = 0,
 	groups = {not_in_creative_inventory = 1},
@@ -253,13 +252,13 @@ minetest.register_node("combat:drone_icon_interact", {
 	on_secondary_use = function(_, placer) minetest.after(0, function() exit_drone(placer:get_player_name()) end) end
 })
 
-minetest.register_node("combat:drone_icon_detonate", {
+minetest.register_node("aurora_tech:drone_icon_detonate", {
 	-- inventory_image = "combat_drone_icon_detonate.png",
 	description = "Detonate",
 
 	drawtype = "mesh",
-	tiles = { "combat_drone.png" },
-	mesh = "combat_drone_detonate.b3d",
+	tiles = { "aurora_tech_entity_remote_drone.png" },
+	mesh = "aurora_tech_tool_remote_drone_detonate.b3d",
 
 	groups = {not_in_creative_inventory = 1},
 	range = 0,
@@ -281,8 +280,8 @@ minetest.register_globalstep(function(delta)
 
 		if vector.length(player:get_player_velocity()) > 0 then
 			local texture = player:get_properties().textures[1]
-			if texture == "combat_drone.png" then texture = "combat_drone_1.png"
-			else texture = "combat_drone.png" end
+			if texture == "aurora_tech_entity_remote_drone.png" then texture = "aurora_tech_entity_remote_drone_1.png"
+			else texture = "aurora_tech_entity_remote_drone.png" end
 
 			player:set_properties({textures = {texture}})
 		end

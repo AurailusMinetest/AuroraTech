@@ -1,8 +1,8 @@
-minetest.register_node("combat:diamond_empowerer", {
+minetest.register_node("aurora_tech:diamond_empowerer", {
 	description = "Diamond Empowerer",
 	drawtype = "mesh",
-	mesh = "combat_diamond_empowerer.b3d",
-	tiles = {"combat_diamond_empowerer.png"},
+	mesh = "aurora_tech_node_diamond_empowerer.b3d",
+	tiles = {"aurora_tech_node_diamond_empowerer.png"},
 	groups = {cracky = 3, stone = 1},
 
 	selection_box = {
@@ -19,24 +19,24 @@ minetest.register_node("combat:diamond_empowerer", {
 	},
 
 	on_rightclick = function(pos, node, clicker, itemstack)
-		minetest.sound_play("combat_interact", {pos = pos, max_hear_distance = 8}, true)
+		minetest.sound_play("aurora_tech_interact", {pos = pos, max_hear_distance = 8}, true)
 		local meta = minetest.get_meta(pos) 
 		if itemstack:get_name() == "default:diamond" then
 			itemstack:take_item()
-			minetest.set_node(pos, {name = "combat:diamond_empowerer_active"})
+			minetest.set_node(pos, {name = "aurora_tech:diamond_empowerer_active"})
 			return itemstack
 		end
 	end
 })
 
 
-minetest.register_node("combat:diamond_empowerer_active", {
+minetest.register_node("aurora_tech:diamond_empowerer_active", {
 	description = "Diamond Empowerer",
 	drawtype = "mesh",
-	mesh = "combat_diamond_empowerer_active.b3d",
-	tiles = {"combat_diamond_empowerer.png"},
+	mesh = "aurora_tech_node_diamond_empowerer_active.b3d",
+	tiles = {"aurora_tech_node_diamond_empowerer.png"},
 	groups = { not_in_creative_inventory = 1, cracky = 3, stone = 1 },
-	drop = "combat:diamond_empowerer",
+	drop = "aurora_tech:diamond_empowerer",
 	light_source = 4,
 
 	selection_box = {
@@ -56,7 +56,7 @@ minetest.register_node("combat:diamond_empowerer_active", {
 		minetest.sound_play("combat_interact", {pos = pos, max_hear_distance = 8}, true)
 		if itemstack:get_name() == "" then
 			itemstack:replace("default:diamond")
-			minetest.set_node(pos, {name = "combat:diamond_empowerer"})
+			minetest.set_node(pos, {name = "aurora_tech:diamond_empowerer"})
 			return itemstack
 		else
 			local diamond = ItemStack("default:diamond")
@@ -64,7 +64,7 @@ minetest.register_node("combat:diamond_empowerer_active", {
 
 			if (inv:room_for_item("main", diamond)) then
 				minetest.after(0, function() inv:add_item("main", diamond) end)
-				minetest.set_node(pos, {name = "combat:diamond_empowerer"})
+				minetest.set_node(pos, {name = "aurora_tech:diamond_empowerer"})
 			end
 		end
 	end,
@@ -75,10 +75,10 @@ minetest.register_node("combat:diamond_empowerer_active", {
 		meta:set_float("progress", 0)
 	end,
 
-	_combat_power = function(pos)
+	_aurora_tech_power = function(pos)
 		local meta = minetest.get_meta(pos)
 		if meta:get_float("progress", 0) >= 60 then
-			minetest.set_node(pos, {name = "combat:diamond_empowerer_complete"})
+			minetest.set_node(pos, {name = "aurora_tech:diamond_empowerer_complete"})
 			return
 		end
 
@@ -95,20 +95,20 @@ minetest.register_node("combat:diamond_empowerer_active", {
 				size = 3,
 				collisiondetection = false,
 
-				texture = "combat_diamond_empowerer_particle_a.png^[verticalframe:6:" .. frame,
+				texture = "aurora_tech_particle_diamond_empowerer_active.png^[verticalframe:6:" .. frame,
 				glow = 5
 			})
 		end
 	end
 })
 
-minetest.register_node("combat:diamond_empowerer_complete", {
+minetest.register_node("aurora_tech:diamond_empowerer_complete", {
 	description = "Diamond Empowerer",
 	drawtype = "mesh",
-	mesh = "combat_diamond_empowerer_active.b3d",
-	tiles = {"combat_diamond_empowerer_complete.png"},
+	mesh = "aurora_tech_node_diamond_empowerer_active.b3d",
+	tiles = {"aurora_tech_node_diamond_empowerer_complete.png"},
 	groups = { not_in_creative_inventory = 1, cracky = 3, stone = 1 },
-	drop = "combat:diamond_empowerer",
+	drop = "aurora_tech:diamond_empowerer",
 	light_source = 10,
 
 	selection_box = {
@@ -142,30 +142,31 @@ minetest.register_node("combat:diamond_empowerer_complete", {
 				size = 2,
 				collisiondetection = false,
 
-				texture = "combat_diamond_empowerer_particle_b.png^[verticalframe:4:" .. frame,
+				texture = "aurora_tech_particle_diamond_empowerer_complete.png^[verticalframe:4:" .. frame,
 				glow = 5
 			})
 		end
 
 		return true
 	end,
+
 	on_rightclick = function(pos, node, clicker, itemstack)
-		local diamond = ItemStack("combat:empowered_diamond")
+		local diamond = ItemStack("aurora_tech:empowered_diamond")
 		local inv = clicker:get_inventory()
 
 		if (inv:room_for_item("main", diamond)) then
 			minetest.after(0, function() inv:add_item("main", diamond) end)
-			minetest.set_node(pos, {name = "combat:diamond_empowerer"})
-			minetest.sound_play("combat_diamond_pickup", {pos = pos, max_hear_distance = 8}, true)
+			minetest.set_node(pos, {name = "aurora_tech:diamond_empowerer"})
+			minetest.sound_play("aurora_tech_empowered_diamond_pickup", {pos = pos, max_hear_distance = 8}, true)
 		end
 	end
 })
 
 minetest.register_craft({
-  output = 'combat:diamond_empowerer',
+  output = 'aurora_tech:diamond_empowerer',
   recipe = {
       {'default:steel_ingot', 'default:steel_ingot', 'default:steel_ingot'},
       {'default:glass', 'default:diamondblock', 'default:glass'},
-      {'default:ice', 'combat:mese_generator', 'default:ice'},
+      {'default:ice', 'aurora_tech:mese_generator', 'default:ice'},
   },
 })

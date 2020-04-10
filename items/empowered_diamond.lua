@@ -1,4 +1,4 @@
-minetest.register_craftitem("combat:empowered_diamond", {
+minetest.register_craftitem("aurora_tech:empowered_diamond", {
 	description = "Empowered Diamond",
-	inventory_image = "combat_empowered_diamond.png"
+	inventory_image = "aurora_tech_icon_empowered_diamond.png"
 })

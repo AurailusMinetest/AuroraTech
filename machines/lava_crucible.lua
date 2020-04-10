@@ -1,8 +1,8 @@
-minetest.register_node("combat:lava_crucible", {
+minetest.register_node("aurora_tech:lava_crucible", {
 	description = "Lava Crucible",
 	drawtype = "mesh",
-	mesh = "combat_lava_crucible.b3d",
-	tiles = {"combat_lava_crucible.png"},
+	mesh = "aurora_tech_node_lava_crucible.b3d",
+	tiles = {"aurora_tech_node_lava_crucible.png"},
 	groups = {cracky = 3, stone = 1},
 
 	selection_box = {
@@ -21,20 +21,20 @@ minetest.register_node("combat:lava_crucible", {
 	on_rightclick = function(pos, node, clicker, itemstack)
 		if itemstack:get_name() == "bucket:bucket_lava" then
 			itemstack:replace("bucket:bucket_empty")
-			minetest.set_node(pos, {name = "combat:lava_crucible_active"})
+			minetest.set_node(pos, {name = "aurora_tech:lava_crucible_active"})
 			return itemstack
 		end
 	end
 })
 
 
-minetest.register_node("combat:lava_crucible_active", {
+minetest.register_node("aurora_tech:lava_crucible_active", {
 	description = "Lava Crucible",
 	drawtype = "mesh",
-	mesh = "combat_lava_crucible.b3d",
-	tiles = {"combat_lava_crucible_active.png"},
+	mesh = "aurora_tech_node_lava_crucible.b3d",
+	tiles = {"aurora_tech_node_lava_crucible_active.png"},
 	groups = { not_in_creative_inventory = 1, cracky = 3, stone = 1 },
-	drop = "combat:lava_crucible",
+	drop = "aurora_tech:lava_crucible",
 	light_source = 12,
 
 	selection_box = {
@@ -60,7 +60,7 @@ minetest.register_node("combat:lava_crucible_active", {
 			if (inv:room_for_item("main", lava)) then
 				itemstack:take_item()
 				minetest.after(0, function() inv:add_item("main", lava) end)
-				minetest.set_node(pos, {name = "combat:lava_crucible"})
+				minetest.set_node(pos, {name = "aurora_tech:lava_crucible"})
 				return itemstack
 			end
 		end
@@ -72,11 +72,11 @@ minetest.register_node("combat:lava_crucible_active", {
 		meta:set_float("progress", 0)
 	end,
 
-	_combat_power = function(pos)
+	_aurora_tech_power = function(pos)
 		local meta = minetest.get_meta(pos)
 		if meta:get_float("progress", 0) >= 60 then
-			minetest.sound_play("combat_core_create", {pos = pos, max_hear_distance = 8}, true)
-			minetest.set_node(pos, {name = "combat:lava_crucible_complete"})
+			minetest.sound_play("aurora_tech_lava_charge_create", {pos = pos, max_hear_distance = 8}, true)
+			minetest.set_node(pos, {name = "aurora_tech:lava_crucible_complete"})
 			return
 		end
 
@@ -93,7 +93,7 @@ minetest.register_node("combat:lava_crucible_active", {
 				size = 3,
 				collisiondetection = false,
 
-				texture = "combat_lava_crucible_particle_a.png^[verticalframe:4:" .. frame,
+				texture = "aurora_tech_particle_lava_crucible_active.png^[verticalframe:4:" .. frame,
 				glow = 5
 			})
 		end
@@ -109,20 +109,20 @@ minetest.register_node("combat:lava_crucible_active", {
 				size = 3,
 				collisiondetection = false,
 
-				texture = "combat_smoke_particle.png^[verticalframe:4:" .. frame,
+				texture = "aurora_tech_particle_smoke.png^[verticalframe:4:" .. frame,
 				glow = 5
 			})
 		end
 	end
 })
 
-minetest.register_node("combat:lava_crucible_complete", {
+minetest.register_node("aurora_tech:lava_crucible_complete", {
 	description = "Lava Crucible",
 	drawtype = "mesh",
-	mesh = "combat_lava_crucible.b3d",
-	tiles = {"combat_lava_crucible_complete.png"},
+	mesh = "aurora_tech_node_lava_crucible.b3d",
+	tiles = {"aurora_tech_node_lava_crucible_complete.png"},
 	groups = { not_in_creative_inventory = 1, cracky = 3, stone = 1 },
-	drop = "combat:lava_crucible",
+	drop = "aurora_tech:lava_crucible",
 	light_source = 14,
 
 	selection_box = {
@@ -162,7 +162,7 @@ minetest.register_node("combat:lava_crucible_complete", {
 				size = 2,
 				collisiondetection = false,
 
-				texture = "combat_lava_crucible_particle_b.png^[verticalframe:4:" .. frame,
+				texture = "aurora_tech_particle_lava_crucible_complete.png^[verticalframe:4:" .. frame,
 				glow = 5
 			})
 		end
@@ -171,13 +171,13 @@ minetest.register_node("combat:lava_crucible_complete", {
 	end,
 
 	on_rightclick = function(pos, node, clicker, itemstack)
-		local charge = ItemStack("combat:lava_charge")
+		local charge = ItemStack("aurora_tech:lava_charge")
 		local inv = clicker:get_inventory()
 
 		if (inv:room_for_item("main", charge)) then
 			minetest.after(0, function() inv:add_item("main", charge) end)
-			minetest.set_node(pos, {name = "combat:lava_crucible"})
-			minetest.sound_play("combat_diamond_pickup", {pos = pos, max_hear_distance = 8}, true)
+			minetest.set_node(pos, {name = "aurora_tech:lava_crucible"})
+			minetest.sound_play("aurora_tech_empowered_diamond_pickup", {pos = pos, max_hear_distance = 8}, true)
 		end
 	end
 })

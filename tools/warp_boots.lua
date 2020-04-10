@@ -12,11 +12,11 @@ minetest.register_on_leaveplayer(function(player)
 	unequip(player)
 end)
 
-armor:register_armor("combat:warp_boots", {
+armor:register_armor("aurora_tech:warp_boots", {
 	description = "Warp Boots",
-	inventory_image = "combat_warp_boots_inv.png",
-	texture = "combat_warp_boots.png",
-	preview = "combat_warp_boots_preview.png",
+	inventory_image = "aurora_tech_icon_warp_boots.png",
+	texture = "aurora_tech_model_warp_boots.png",
+	preview = "aurora_tech_armor_warp_boots.png",
 	groups = { armor_feet = 1, armor_use = 500 },
 	armor_groups = { fleshy = 10, radiation = 10 },
 	damage_groups = { cracky = 3, snappy = 3, choppy = 3, crumbly = 3, level = 1 },
@@ -32,9 +32,9 @@ local function attempt_teleport(player)
 	local target = vector.add(player:get_pos(), off)
 
 	if minetest.registered_nodes[minetest.get_node(target).name].walkable or minetest.registered_nodes[minetest.get_node(vector.add(target, vector.new(0, 1, 0))).name].walkable then
-		minetest.sound_play("combat_warp_boots_fail", {pos = player:get_pos(), max_hear_distance = 8}, true)
+		minetest.sound_play("aurora_tech_warp_boots_fail", {pos = player:get_pos(), max_hear_distance = 8}, true)
 	else
-		minetest.sound_play("combat_warp_boots_warp", {pos = player:get_pos(), gain = 0.7, max_hear_distance = 8}, true)
+		minetest.sound_play("aurora_tech_warp_boots_warp", {pos = player:get_pos(), gain = 0.7, max_hear_distance = 8}, true)
 
 		local move_step = 0
 
@@ -82,9 +82,9 @@ minetest.register_globalstep(function(delta)
 end)
 
 minetest.register_craft({
-  output = 'combat:warp_boots',
+  output = 'aurora_tech:warp_boots',
   recipe = {
-      {'combat:empowered_diamond', '', 'combat:empowered_diamond'},
+      {'aurora_tech:empowered_diamond', '', 'aurora_tech:empowered_diamond'},
       {'default:copper_ingot', '', 'default:copper_ingot'},
       {'default:steel_ingot', '', 'default:steel_ingot'},
   },

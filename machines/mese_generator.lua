@@ -1,8 +1,8 @@
-minetest.register_node("combat:mese_generator", {
+minetest.register_node("aurora_tech:mese_generator", {
 	description = "Mese Generator",
 	drawtype = "mesh",
-	mesh = "combat_mese_charger.b3d",
-	tiles = {"combat_mese_charger.png"},
+	mesh = "aurora_tech_node_mese_generator.b3d",
+	tiles = {"aurora_tech_node_mese_generator.png"},
 	groups = {cracky = 3, stone = 1},
 
 	selection_box = {
@@ -21,19 +21,19 @@ minetest.register_node("combat:mese_generator", {
 	on_rightclick = function(pos, node, clicker, itemstack)
 		if itemstack:get_name() == "default:mese_crystal" then
 			itemstack:take_item()
-			minetest.set_node(pos, {name = "combat:mese_generator_active"})
+			minetest.set_node(pos, {name = "aurora_tech:mese_generator_active"})
 			return itemstack
 		end
 	end
 })
 
-minetest.register_node("combat:mese_generator_active", {
+minetest.register_node("aurora_tech:mese_generator_active", {
 	description = "Mese Generator",
 	drawtype = "mesh",
-	mesh = "combat_mese_charger_active.b3d",
-	tiles = {"combat_mese_charger_active.png"},
+	mesh = "aurora_tech_node_mese_generator_active.b3d",
+	tiles = {"aurora_tech_node_mese_generator_active.png"},
 	groups = { not_in_creative_inventory = 1, cracky = 3, stone = 1 },
-	drop = "combat:mese_generator",
+	drop = "aurora_tech:mese_generator",
 	light_source = 9,
 
 	selection_box = {
@@ -62,10 +62,11 @@ minetest.register_node("combat:mese_generator_active", {
 		meta:set_float("power_left", 50)
 		timer:start(0.3)
 	end,
+
 	on_timer = function(pos)
 		local meta = minetest.get_meta(pos)
 		if meta:get_float("power_left", 0) <= 0 then
-			minetest.set_node(pos, {name = "combat:mese_generator"})
+			minetest.set_node(pos, {name = "aurora_tech:mese_generator"})
 			return false
 		end
 
@@ -82,29 +83,29 @@ minetest.register_node("combat:mese_generator_active", {
 				size = 3,
 				collisiondetection = false,
 
-				texture = "combat_mese_charger_particle.png^[verticalframe:6:" .. frame,
+				texture = "aurora_tech_particle_mese_generator_active.png^[verticalframe:6:" .. frame,
 				glow = 5
 			})
 		end
 
 		local check = vector.add(pos, {x = 0, y = 0, z = -1})
-		if (minetest.registered_nodes[minetest.get_node(check).name]._combat_power ~= nil) then 
-			minetest.registered_nodes[minetest.get_node(check).name]._combat_power(check)
+		if (minetest.registered_nodes[minetest.get_node(check).name]._aurora_tech_power ~= nil) then 
+			minetest.registered_nodes[minetest.get_node(check).name]._aurora_tech_power(check)
 			consumed = consumed + 0.5
 		end
 		check = vector.add(pos, {x = 0, y = 0, z = 1})
-		if (minetest.registered_nodes[minetest.get_node(check).name]._combat_power ~= nil) then 
-			minetest.registered_nodes[minetest.get_node(check).name]._combat_power(check) 
+		if (minetest.registered_nodes[minetest.get_node(check).name]._aurora_tech_power ~= nil) then 
+			minetest.registered_nodes[minetest.get_node(check).name]._aurora_tech_power(check) 
 			consumed = consumed + 0.5
 		end
 		check = vector.add(pos, {x = -1, y = 0, z = 0})
-		if (minetest.registered_nodes[minetest.get_node(check).name]._combat_power ~= nil) then 
-			minetest.registered_nodes[minetest.get_node(check).name]._combat_power(check) 
+		if (minetest.registered_nodes[minetest.get_node(check).name]._aurora_tech_power ~= nil) then 
+			minetest.registered_nodes[minetest.get_node(check).name]._aurora_tech_power(check) 
 			consumed = consumed + 0.5
 		end
 		check = vector.add(pos, {x = 1, y = 0, z = 0})
-		if (minetest.registered_nodes[minetest.get_node(check).name]._combat_power ~= nil) then 
-			minetest.registered_nodes[minetest.get_node(check).name]._combat_power(check) 
+		if (minetest.registered_nodes[minetest.get_node(check).name]._aurora_tech_power ~= nil) then 
+			minetest.registered_nodes[minetest.get_node(check).name]._aurora_tech_power(check) 
 			consumed = consumed + 0.5
 		end
 
@@ -116,7 +117,7 @@ minetest.register_node("combat:mese_generator_active", {
 })
 
 minetest.register_craft({
-  output = 'combat:mese_generator',
+  output = 'aurora_tech:mese_generator',
   recipe = {
       {'default:steel_ingot', 'default:mese_crystal', 'default:steel_ingot'},
       {'default:tin_ingot', 'default:copperblock', 'default:tin_ingot'},

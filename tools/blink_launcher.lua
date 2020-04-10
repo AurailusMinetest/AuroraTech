@@ -11,24 +11,24 @@ local function shoot_gun(player)
 	local pos = vector.add(player:get_pos(), {x = 0, y = 1.35, z = 0})
  	local dir = player:get_look_dir()
 
- 	minetest.sound_play("combat_blink_launcher_send", {pos = pos, max_hear_distance = 8, gain = 0.8}, true)
+ 	minetest.sound_play("aurora_tech_blink_launcher_send", {pos = pos, max_hear_distance = 8, gain = 0.8}, true)
  	-- minetest.sound_play("combat_blink_launcher_dead", {pos = pos, max_hear_distance = 8}, true)
 
-	local ent = minetest.add_entity(pos, "combat:blink_launcher_bullet", minetest.serialize({shooter = name}))
+	local ent = minetest.add_entity(pos, "aurora_tech:blink_launcher_bullet", minetest.serialize({shooter = name}))
 	ent:set_velocity(vector.add(vector.multiply(dir, 16), vector.multiply(player:get_player_velocity(), 0.25)))
 end
 
-combat.register_tool_3d("combat:blink_launcher", {
+aurora_tech.register_tool_3d("aurora_tech:blink_launcher", {
 	description = "Blink Launcher",
-	tiles = { "combat_blink_launcher.png" },
-	mesh = "combat_blink_launcher.b3d",
-	inventory_image = "combat_blink_launcher_icon.png"
+	tiles = { "aurora_tech_tool_blink_launcher.png" },
+	mesh = "aurora_tech_tool_blink_launcher.b3d",
+	inventory_image = "aurora_tech_icon_blink_launcher.png"
 }, function(_, placer) shoot_gun(placer) end)
 
-minetest.register_entity("combat:blink_launcher_bullet", {
+minetest.register_entity("aurora_tech:blink_launcher_bullet", {
 	initial_properties = {
 		visual = "sprite",
-		textures = {"combat_blink_launcher_bullet.png"},
+		textures = {"aurora_tech_particle_blink_launcher_bullet.png"},
 		visual_size = {x = 0.2, y = 0.2},
 
 		physical = false,
@@ -37,6 +37,7 @@ minetest.register_entity("combat:blink_launcher_bullet", {
 
 		glow = 14
 	},
+
 	on_activate = function(self, static)
 		self.shooter = minetest.deserialize(static).shooter
 		self.lifetime = 0
@@ -45,9 +46,11 @@ minetest.register_entity("combat:blink_launcher_bullet", {
 
 		gun_projectiles[self.shooter] = self
 	end,
+
 	get_staticdata = function(self)
 		return minetest.serialize({shooter = self.shooter})
 	end,
+
 	on_step = function(self, delta)
 		self.lifetime = self.lifetime + delta
 		if self.lifetime > 2 then 
@@ -62,13 +65,13 @@ minetest.register_entity("combat:blink_launcher_bullet", {
 					size = 3,
 					collisiondetection = false,
 
-					texture = "combat_blink_launcher_particle.png^[verticalframe:4:" .. frame .. 
-					"^(combat_blink_launcher_particle_dead.png^[verticalframe:4:" .. frame .. "^[opacity:" .. tostring(dead_opac) .. ")",
+					texture = "aurora_tech_particle_blink_launcher_trail.png^[verticalframe:4:" .. frame .. 
+					"^(aurora_tech_particle_blink_launcher_trail_dead.png^[verticalframe:4:" .. frame .. "^[opacity:" .. tostring(dead_opac) .. ")",
 					glow = 14
 				})
 			end
 			self:remove() 
- 			minetest.sound_play("combat_blink_launcher_timeout", {to_player = self.shooter, gain = 0.4}, true)
+ 			minetest.sound_play("aurora_tech_blink_launcher_timeout", {to_player = self.shooter, gain = 0.4}, true)
 			return 
 		end
 
@@ -85,21 +88,22 @@ minetest.register_entity("combat:blink_launcher_bullet", {
 				size = 1,
 				collisiondetection = false,
 
-				texture = "combat_blink_launcher_particle.png^[verticalframe:4:" .. frame .. 
-				"^(combat_blink_launcher_particle_dead.png^[verticalframe:4:" .. frame .. "^[opacity:" .. tostring(dead_opac + 40) .. ")",
+				texture = "aurora_tech_particle_blink_launcher_trail.png^[verticalframe:4:" .. frame .. 
+				"^(aurora_tech_particle_blink_launcher_trail_dead.png^[verticalframe:4:" .. frame .. "^[opacity:" .. tostring(dead_opac + 40) .. ")",
 				glow = 14
 			})
 		end
 
 		self.object:set_properties({
-			textures = {"combat_blink_launcher_bullet.png^[verticalframe:4:" .. frame .. 
-				"^(combat_blink_launcher_bullet_dead.png^[verticalframe:4:" .. frame .. "^[opacity:" .. tostring(dead_opac) .. ")"}
+			textures = {"aurora_tech_particle_blink_launcher_bullet.png^[verticalframe:4:" .. frame .. 
+				"^(aurora_tech_particle_blink_launcher_bullet_dead.png^[verticalframe:4:" .. frame .. "^[opacity:" .. tostring(dead_opac) .. ")"}
 		})
 
 		if minetest.registered_nodes[minetest.get_node(self.object:get_pos()).name].walkable then
 			self:trigger_teleport()
 		end
 	end,
+
 	trigger_teleport = function(self)
 		local player = minetest.get_player_by_name(self.shooter)
 		if not player then self:remove() return end
@@ -123,7 +127,7 @@ minetest.register_entity("combat:blink_launcher_bullet", {
 		local add_vel = vector.multiply(self.object:get_velocity(), on_ground and 1 or 0.5)
 		player:add_player_velocity(add_vel)
 		
-	 	minetest.sound_play({name = "combat_blink_launcher_recv"}, {pos = pos, max_hear_distance = 8}, true)
+	 	minetest.sound_play({name = "aurora_tech_blink_launcher_recv"}, {pos = pos, max_hear_distance = 8}, true)
 
 		for i = 0, 60 do
 			local frame = math.floor(math.random() * 4)
@@ -135,7 +139,7 @@ minetest.register_entity("combat:blink_launcher_bullet", {
 				size = 3,
 				collisiondetection = false,
 
-				texture = "combat_blink_launcher_particle.png^[verticalframe:4:" .. frame,
+				texture = "aurora_tech_particle_blink_launcher_trail.png^[verticalframe:4:" .. frame,
 				glow = 14
 			})
 		end
@@ -152,10 +156,10 @@ minetest.register_entity("combat:blink_launcher_bullet", {
 })
 
 minetest.register_craft({
-  output = 'combat:blink_launcher',
+  output = 'aurora_tech:blink_launcher',
   recipe = {
       {'', 'default:obsidian_glass', ''},
-      {'default:tin_ingot', 'combat:empowered_diamond', 'default:steel_ingot'},
+      {'default:tin_ingot', 'aurora_tech:empowered_diamond', 'default:steel_ingot'},
       {'', 'default:copper_ingot', 'default:steel_ingot'},
   },
 })
