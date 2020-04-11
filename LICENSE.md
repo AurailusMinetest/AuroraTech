@@ -1,3 +1,9 @@
+**Assets License:**
+
+This work is licensed under a [Creative Commons Attribution-ShareAlike 2.5 Canada License](https://creativecommons.org/licenses/by-sa/2.5/ca/)
+
+**Source License:**
+
 MIT License
 
 Copyright (c) 2020 Nicole Collings
