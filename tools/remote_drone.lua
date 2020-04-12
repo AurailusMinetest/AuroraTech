@@ -141,13 +141,11 @@ local function interact_remote_dead(itemstack, player, pointed_thing)
 	minetest.sound_play("aurora_tech_warp_boots_fail", {pos = player:get_pos(), max_hear_distance = 8}, true)
 end
 
-minetest.register_on_joinplayer(function(player)
-	minetest.register_on_player_receive_fields(function(player, _, fields)
-    if fields.aurora_tech_detonate_drone then
-    	exit_drone(player:get_player_name())
-    	minetest.close_formspec(player:get_player_name(), "")
-    end
-	end)
+minetest.register_on_player_receive_fields(function(player, _, fields)
+  if fields.aurora_tech_detonate_drone then
+  	exit_drone(player:get_player_name())
+  	minetest.close_formspec(player:get_player_name(), "")
+  end
 end)
 
 minetest.register_on_shutdown(function()
