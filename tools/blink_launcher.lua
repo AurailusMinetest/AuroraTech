@@ -106,7 +106,9 @@ minetest.register_entity("aurora_tech:blink_launcher_bullet", {
 				"^(aurora_tech_particle_blink_launcher_bullet_dead.png^[verticalframe:4:" .. frame .. "^[opacity:" .. tostring(dead_opac) .. ")"}
 		})
 
-		if minetest.registered_nodes[minetest.get_node(self.object:get_pos()).name].walkable then
+		local node_def = minetest.registered_nodes[minetest.get_node(self.object:get_pos()).name]
+
+		if not node_def or node_def.walkable then
 			self:trigger_teleport()
 		end
 	end,

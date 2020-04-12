@@ -18,22 +18,24 @@ local function laser_dead(player)
 	minetest.sound_play("aurora_tech_mining_laser_stop", {to_player = player:get_player_name(), gain = 0.8}, true)
 end
 
-local function disable_laser(player)
+local function disable_laser(name)
+	local player = minetest.get_player_by_name(name)
+	if not player then laser_users[name] = nil return end
+
 	local inventory = player:get_inventory()
 	for i = 1, inventory:get_size("main") do
 		if inventory:get_stack("main", i):get_name():sub(0, ("aurora_tech:mining_laser_active"):len()) == "aurora_tech:mining_laser_active" then
 			local dura = inventory:get_stack("main", i):get_name():sub(("aurora_tech:mining_laser_active_0"):len())
 			inventory:set_stack("main", i, "aurora_tech:mining_laser_" .. dura)
-			
 			break
 		end
 	end
 
-	if laser_users[player:get_player_name()] == nil then return end
+	if laser_users[name] == nil then return end
 
-	minetest.sound_stop(laser_users[player:get_player_name()].sound)
-	minetest.sound_play("aurora_tech_mining_laser_stop", {to_player = player:get_player_name(), gain = 0.8}, true)
-	laser_users[player:get_player_name()] = nil
+	minetest.sound_stop(laser_users[name].sound)
+	minetest.sound_play("aurora_tech_mining_laser_stop", {to_player = name, gain = 0.8}, true)
+	laser_users[name] = nil
 end
 
 local function gun_break_blocks(player)
@@ -135,10 +137,10 @@ minetest.register_globalstep(function(delta)
 	for p,_ in pairs(laser_users) do
 		local player = minetest.get_player_by_name(p)
 
-		if not player:get_player_control().RMB 
+		if not player or not player:get_player_control().RMB 
 			or player:get_wielded_item():get_name():sub(0, ("aurora_tech:mining_laser_active"):len()) ~= "aurora_tech:mining_laser_active" 
 			or player:get_wielded_item():get_name() == "aurora_tech:mining_laser_active_1" then
-			disable_laser(player)
+			disable_laser(p)
 		else
 			if trigger_break then
 				gun_break_blocks(player)
@@ -168,7 +170,9 @@ aurora_tech.register_tool_3d("aurora_tech:mining_laser_active", {
 	inventory_image = "aurora_tech_icon_mining_laser_active.png",
 	groups = { not_in_creative_inventory = 1 },
 	range = 0
-}, function(_, placer) minetest.after(0, function() disable_laser(placer) end) end, dura, false, function(_, placer) minetest.after(0, function() disable_laser(placer) end) end)
+}, 
+function(_, placer) minetest.after(0, function() disable_laser(placer:get_player_name()) end) end, dura, false, 
+function(_, placer) minetest.after(0, function() disable_laser(placer:get_player_name()) end) end)
 
 
 aurora_tech.register_tool_3d("aurora_tech:mining_laser", {
