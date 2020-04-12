@@ -39,7 +39,6 @@ local function enter_drone(name)
 		inventory = player:get_inventory():get_lists(),
 		formspec = player:get_inventory_formspec(),
 		hotbar = player:hud_get_hotbar_itemcount(),
-		nametag = player:get_nametag_attributes().text,
 		hud = player:hud_add({hud_elem_type = "image", text = "aurora_tech_ui_drone_overlay.png", position = {x = 0.5, y = 0.5}, scale = {x = -100, y = -100}}),
 		ent = minetest.add_entity(player:get_pos(), "aurora_tech:drone_player_ref", minetest.serialize({player = name})):get_luaentity()
 	}
@@ -106,15 +105,15 @@ local function exit_drone(name)
     textures = props.textures,
 	})
 
-	drone_refs[name] = nil
-
 	minetest.after(0.6, function()
-		if drone_refs[name] ~= nil then return end
-
-		player:set_nametag_attributes({text = props.nametag})
-		player:set_properties({ visual_size = {x = 1, y = 1} })
-
 		props.ent.object:remove()
+
+		if drone_refs[name] == props then
+			drone_refs[name] = nil
+		else return end
+
+		player:set_nametag_attributes({text = player:get_player_name()})
+		player:set_properties({ visual_size = {x = 1, y = 1} })
 	end)
 
 
