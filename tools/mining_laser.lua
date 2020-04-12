@@ -67,6 +67,8 @@ local function gun_break_blocks(player)
 		end
 
 		minetest.sound_play("aurora_tech_mining_laser_destroy", {pos = pos, gain = 0.7, max_hear_distance = 16}, true)
+		local def = minetest.registered_nodes[minetest.get_node(pos).name]
+		if def and def.on_dig then def.on_dig(pos, def, player) end
 		minetest.node_dig(pos, minetest.registered_nodes[minetest.get_node(pos).name], player)
 	end
 
