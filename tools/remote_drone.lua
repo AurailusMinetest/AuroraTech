@@ -110,7 +110,7 @@ local function exit_drone(name)
 
 	minetest.after(0.6, function()
 		if drone_refs[name] ~= nil then return end
-		
+
 		player:set_nametag_attributes({text = props.nametag})
 		player:set_properties({ visual_size = {x = 1, y = 1} })
 
@@ -130,6 +130,16 @@ local function interact_remote(itemstack, player, pointed_thing)
 	end
 
 	if not drone_refs[name] then minetest.after(0, function() enter_drone(name) end) end
+end
+
+local function interact_remote_dead(itemstack, player, pointed_thing)
+	local name = player:get_player_name()
+
+	if pointed_thing and pointed_thing.type == "node" and minetest.get_node(pointed_thing.under).name == "aurora_tech:recharger" then
+		return minetest.registered_nodes["aurora_tech:recharger"].on_rightclick(pointed_thing.under, nil, player, itemstack)
+	end
+	
+	minetest.sound_play("aurora_tech_warp_boots_fail", {pos = player:get_pos(), max_hear_distance = 8}, true)
 end
 
 minetest.register_on_joinplayer(function(player)
@@ -165,7 +175,7 @@ aurora_tech.register_tool_3d("aurora_tech:drone_remote", {
 	-- groups = {not_in_creative_inventory = 1},
 	inventory_image = "aurora_tech_icon_drone_remote.png",
 	mesh = "aurora_tech_tool_drone_remote.b3d",
-}, function(itemstack, placer, pointed_thing) return interact_remote(itemstack, placer, pointed_thing) end, 16, true, nil)
+}, interact_remote, 16, true, interact_remote_dead)
 
 minetest.register_entity("aurora_tech:drone_player_ref", {
 	initial_properties = {

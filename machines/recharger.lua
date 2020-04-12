@@ -97,7 +97,7 @@ for i = 1, 2 do
 				minetest.after(0, function() inv:add_item("main", remote) end)
 				minetest.set_node(pos, {name = "aurora_tech:recharger", param2 = minetest.get_node(pos).param2})
 			end
-		end,
+		end
 	})
 end
 
@@ -140,7 +140,7 @@ minetest.register_node("aurora_tech:recharger_no_power", {
 			minetest.after(0, function() inv:add_item("main", remote) end)
 			minetest.set_node(pos, {name = "aurora_tech:recharger", param2 = minetest.get_node(pos).param2})
 		end
-	end,
+	end
 })
 
 

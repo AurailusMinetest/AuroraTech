@@ -34,7 +34,7 @@ local function attempt_teleport(player)
 	if minetest.registered_nodes[minetest.get_node(target).name].walkable or minetest.registered_nodes[minetest.get_node(vector.add(target, vector.new(0, 1, 0))).name].walkable then
 		minetest.sound_play("aurora_tech_warp_boots_fail", {pos = player:get_pos(), max_hear_distance = 8}, true)
 	else
-		minetest.sound_play("aurora_tech_warp_boots_warp", {pos = player:get_pos(), gain = 0.7, max_hear_distance = 8}, true)
+		minetest.sound_play("aurora_tech_warp_boots_warp", {pos = player:get_pos(), max_hear_distance = 8}, true)
 
 		local move_step = 0
 
