@@ -30,7 +30,6 @@ local function enter_drone(name)
 
 	drone_refs[name] = {
 		collision = table.copy(player:get_properties().collisionbox),
-		visual_size = table.copy(player:get_properties().visual_size),
 		textures = table.copy(player:get_properties().textures),
 		mesh = player:get_properties().mesh,
 		eye_offset_first = player:get_eye_offset().offset_first,
@@ -100,17 +99,20 @@ local function exit_drone(name)
 	player:hud_set_flags({healthbar = true, breathbar = true, hotbar = true})
 	player:hud_set_hotbar_itemcount(props.hotbar)
 	player:hud_remove(props.hud)
-	
+
+	player:set_properties({ 
+		collisionbox = props.collision,
+    mesh = props.mesh,
+    textures = props.textures,
+	})
+
 	drone_refs[name] = nil
 
 	minetest.after(0.6, function()
+		if drone_refs[name] ~= nil then return end
+		
 		player:set_nametag_attributes({text = props.nametag})
-		player:set_properties({ 
-			collisionbox = props.collision,
-	    visual_size = props.visual_size,
-	    mesh = props.mesh,
-	    textures = props.textures,
-		})
+		player:set_properties({ visual_size = {x = 1, y = 1} })
 
 		props.ent.object:remove()
 	end)
@@ -121,8 +123,6 @@ end
 local function interact_remote(itemstack, player, pointed_thing)
 	local name = player:get_player_name()
 	local charge = itemstack:get_name():sub(26)
-
-	print(dump(pointed_thing))
 
 	if pointed_thing and pointed_thing.type == "node" and minetest.get_node(pointed_thing.under).name == "aurora_tech:recharger" then
 		if charge == 16 then return itemstack end
@@ -197,7 +197,7 @@ minetest.register_entity("aurora_tech:drone_player_ref", {
 		return ""
 	end,
 	on_punch = function(self)
-		exit_drone(self.player)
+		minetest.after(0, function() exit_drone(self.player) end)
 		self.object:remove()
 	end,
 	on_step = function(self, delta)
