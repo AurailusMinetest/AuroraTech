@@ -9,6 +9,7 @@ local function enable_laser(itemstack, player)
 	}
 
 	local dura = itemstack:get_name():sub(("aurora_tech:mining_laser_0"):len())
+	if tonumber(dura) == nil then dura = itemstack:get_name():sub(("aurora_tech:mining_laser_dropped_0"):len()) end
 
 	itemstack:replace("aurora_tech:mining_laser_active_" .. dura)
 	return itemstack
@@ -156,8 +157,9 @@ end)
 local old_item_drop = minetest.item_drop
 function minetest.item_drop(itemstack, dropper, pos)
 	if laser_users[dropper:get_player_name()] ~= nil then return itemstack end
-	if itemstack:get_name() == "aurora_tech:mining_laser" then
-		itemstack:replace("aurora_tech:mining_laser_dropped")
+	if itemstack:get_name():sub(0, ("aurora_tech:mining_laser"):len()) == "aurora_tech:mining_laser" then
+		local dura = itemstack:get_name():sub(("aurora_tech:mining_laser_0"):len())
+		itemstack:replace("aurora_tech:mining_laser_dropped_" .. dura)
 		return old_item_drop(itemstack, dropper, pos)
 	end
 	return old_item_drop(itemstack, dropper, pos)
